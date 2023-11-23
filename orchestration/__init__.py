@@ -1,2 +1,2 @@
 # filename: orchestration/__init__.py
-# This file is required to make Python treat the directory as a package.
+# This __init__.py file marks the orchestration directory as a Python package.

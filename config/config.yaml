@@ -1,0 +1,8 @@
+# filename: config/config.yaml
+datasources:
+ - datasource: solar_panel_data
+   connector:
+     name: local_folder_connector
+     folder_path: ../data/solar_panels/raw
+     folder_name: solar_panels
+     file_path: solar_data.csv
