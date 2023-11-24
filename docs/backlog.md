@@ -2,54 +2,57 @@
 
 ## PythonPackageName
 
+```python
 solar_panel_monitoring
+```
 
 ## DependenciesandTools
 
-- ['pandas', 'For data loading and manipulation tasks such as data ingestion, curation, and transformation.']
-- ['pyarrow', 'To support parquet file format operations during data curation.']
-- ['azure-storage-blob', 'To interact with Azure Blob Storage for storing raw, curated, and conformed data.']
-- ['azure-identity', 'To authenticate with Azure services.']
-- ['azure-datafactory', 'To orchestrate the data pipeline workflows.']
-- ['plotly', 'To create interactive visualizations for the dashboard.']
-- ['dash', 'To build the interactive web-based dashboard.']
-- ['pytest', 'For writing and running tests to ensure code quality.']
+- ['azure-synapse-analytics', 'For data warehousing and big data analytics.']
+- ['azure-kubernetes-service', 'For deploying containerized microservices.']
+- ['python-dotenv', 'To manage environment variables for configuration.']
+- ['requests', 'To make HTTP requests between microservices.']
+- ['pandas', 'For data manipulation and analysis.']
+- ['numpy', 'For numerical operations on data.']
+- ['plotly', 'For creating interactive visualizations.']
+- ['powerbi-embedded', 'For embedding Power BI visualizations.']
+- ['azure-data-factory', 'For orchestrating and automating data flows.']
 
 ## RequiredPythonPackages
 
+azure-synapse-analytics==0.5.0
+azure-kubernetes-service==1.0.0
+python-dotenv==0.19.2
+requests==2.26.0
 pandas==1.3.4
-pyarrow==5.0.0
-azure-storage-blob==12.9.0
-azure-identity==1.7.0
-azure-datafactory==0.0.1
-plotly==5.5.0
-dash==2.0.0
-pytest==6.2.5
+numpy==1.21.4
+plotly==5.3.1
+powerbi-embedded==1.1.0
+azure-data-factory==0.3.0
 
 
 ## TaskList
 
-- ['setup/environment_setup.py', 'Sets up the development environment, including the installation of required Python packages and configuration of Azure services.']
-- ['data_ingestion/ingest_data.py', "Implements the DataIngestion class to ingest data from CSV files and store it in the 'raw' data store in Azure Data Lake."]
-- ['data_curation/curate_data.py', "Implements the DataCuration class to clean, deduplicate, and normalize raw data, and store it as a parquet table in the 'curated' folder within Azure Data Lake."]
-- ['data_transformation/transform_data.py', "Implements the DataTransformation class to calculate KPIs and metrics, and store the results in the 'conformed' data store."]
-- ['data_visualization/visualize_data.py', 'Implements the DataVisualization class to create interactive charts and graphs using Plotly and Dash for the BI Dashboard.']
-- ['orchestration/orchestrate_pipeline.py', 'Implements the Orchestration class to manage the execution sequence of the microservices using Azure Data Factory.']
-- ['tests/test_data_ingestion.py', 'Contains unit tests for the data ingestion process.']
-- ['tests/test_data_curation.py', 'Contains unit tests for the data curation process.']
-- ['tests/test_data_transformation.py', 'Contains unit tests for the data transformation process.']
-- ['tests/test_data_visualization.py', 'Contains unit tests for the data visualization process.']
+- ['main.py', 'Serves as the entry point for the program. Orchestrates the flow of the program according to the sequence diagram in the technical design document.']
+- ['config.yaml', 'Contains all the data source configuration information required by the data_ingestion service.']
+- ['data_ingestion_service.py', 'Create a microservice for ingesting data from CSV files into Azure Synapse Analytics. Include CSV validation and schema checks.']
+- ['data_curation_service.py', 'Develop a microservice to handle data quality issues such as missing values and inconsistencies. Implement imputation and normalization methods.']
+- ['data_transformation_service.py', 'Build a microservice to apply business logic to curated data, calculate KPIs, and populate fact and dimension tables in the conformed data store.']
+- ['data_visualization_service.py', 'Implement a microservice to retrieve conformed data and generate interactive visualizations using Plotly or Power BI Embedded.']
+- ['orchestration_service.py', 'Set up the orchestration layer using Azure Data Factory to coordinate the execution of microservices and manage data flow.']
+- ['data_models.py', 'Define all the table structures and related functions for the FACT and DIM tables.']
 
 ## FullAPISpec
 
+```python
 openapi: 3.0.0
 info:
   title: "Solar Panel Performance Monitoring API"
   version: "1.0.0"
 paths:
-  /ingest:
+  /ingest_data:
     post:
-      summary: "Ingest data from CSV data source"
+      summary: "Ingest solar sensor data"
       requestBody:
         required: true
         content:
@@ -62,9 +65,9 @@ paths:
       responses:
         '200':
           description: "Data ingestion successful"
-  /curate:
+  /curate_data:
     post:
-      summary: "Curate raw data"
+      summary: "Curate ingested data"
       requestBody:
         required: true
         content:
@@ -72,14 +75,16 @@ paths:
             schema:
               type: object
               properties:
-                raw_data_path:
-                  type: string
+                data:
+                  type: array
+                  items:
+                    type: object
       responses:
         '200':
           description: "Data curation successful"
-  /transform:
+  /transform_data:
     post:
-      summary: "Transform curated data into actionable insights"
+      summary: "Transform curated data into KPIs and performance metrics"
       requestBody:
         required: true
         content:
@@ -87,20 +92,26 @@ paths:
             schema:
               type: object
               properties:
-                curated_data_path:
-                  type: string
+                data:
+                  type: array
+                  items:
+                    type: object
       responses:
         '200':
           description: "Data transformation successful"
-  /visualize:
+  /visualize_data:
     get:
-      summary: "Generate visualizations for the BI Dashboard"
+      summary: "Retrieve visualizations for the BI Dashboard"
+      parameters:
+        - in: query
+          name: panel_id
+          schema:
+            type: integer
+          description: "The ID of the solar panel"
       responses:
         '200':
           description: "Data visualization successful"
-          content:
-            text/html:
-              schema:
-                type: string
-
+        '404':
+          description: "Visualization not found for the specified panel ID"
+```
 
