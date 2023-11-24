@@ -6,21 +6,21 @@ The purpose of this document is to outline the requirements for the development 
 
 ## Assumptions
 
-- The data for the dashboard will be provided in a CSV format and will be updated daily.
-- The dashboard will be used by general business users with no specific color schemes or branding guidelines provided.
+- The application will be developed to support daily data processing.
+- Users of the dashboard will have general business knowledge without requiring technical expertise in data analysis.
 
 ## FunctionalRequirements
 
-- The dashboard must display the current energy output of solar panels.
-- The dashboard must identify underperforming solar panels and provide insights into potential causes.
-- The dashboard must track and analyze the frequency and reasons for solar panel failures.
-- The dashboard must provide predictive insights on potential solar panel failures.
+- The application should allow users to view the current energy output of solar panels.
+- The application should identify and report underperforming solar panels based on predefined performance thresholds.
+- The application should analyze and report on the causes and frequency of solar panel failures.
+- The application should provide predictive insights on potential solar panel failures.
 
 ## NonFunctionalRequirements
 
-- The dashboard must adhere to the IEC61970 standards for the Energy Industry.
-- The dashboard must be capable of handling daily data updates.
-- The dashboard must provide interactive features such as drill-down capabilities and hover-over details.
+- The dashboard should adhere to the IEC61970 standard for the Energy Industry.
+- The dashboard should be capable of handling CSV data formats.
+- The dashboard should be designed for daily data updates.
 
 ## DataSources
 
@@ -28,42 +28,44 @@ The purpose of this document is to outline the requirements for the development 
 
 ## DataCuration
 
-- Data curation will involve validating the sensor data against expected ranges and formats.
-- Any missing or anomalous data will be flagged for review.
+- Missing values will be handled by appropriate imputation methods.
+- Data normalization techniques will be applied where necessary to ensure consistency.
 
 ## DataTransformation
 
-- KPIs will be defined based on industry standards and the available data fields.
+- KPIs will be defined based on industry standards and client input.
 - Metrics logic will be developed to calculate energy output, efficiency, and other relevant performance indicators.
 
 ## DataVisualization
 
-- The dashboard will show daily, weekly, and monthly electricity production trends.
-- The dashboard will display variations in production or capacity with changing weather or temperature.
+- The dashboard will display daily, weekly, and monthly electricity production trends.
+- The dashboard will show variations in production or capacity with changing weather or temperature.
 - The dashboard will compare different panels' performance and show capacity utilization.
 - The dashboard will correlate factors like temperature or sunlight intensity with panel efficiency.
 - The dashboard will display key performance indicators such as average daily production, total capacity, and efficiency metrics.
+- The dashboard will include interactive features such as drill-down capabilities and hover-over details.
 
 ## DataSecurityAndPrivacy
 
-- All data will be handled in compliance with organizational standards and any applicable data protection regulations.
+- All data will be handled in compliance with organizational standards and privacy regulations.
 
 ## Orchestration
 
-- Data processing and dashboard updates will be orchestrated to occur on a daily basis.
+- The application will be orchestrated to ensure data is processed and visualized in a timely manner.
 
 ## UIRequirements
 
-- The dashboard will be accessible via a web interface suitable for general business users.
+- The application will be accessible via a web interface.
 - The UI will allow users to select specific time periods, panels, or metrics for analysis.
+- The UI will include global filters for time periods, geographic locations, and panel types.
 
 ## UserStories
 
-- As a maintenance manager, I want to quickly identify underperforming solar panels so that I can schedule maintenance or replacements to optimize energy output.
-- As an operations analyst, I want to analyze the correlation between weather conditions and panel performance to improve future panel designs and placements.
-- As a business user, I want to view the overall energy production trends to make informed decisions about energy management and investment.
+- As a business user, I want to view the current energy output to assess real-time performance.
+- As a maintenance manager, I want to identify underperforming solar panels to schedule maintenance or replacement.
+- As an operations analyst, I want to understand the causes and frequency of panel failures to improve reliability.
 
 ## AnythingUnclear
 
-
+The requirements have been clearly defined and understood.
 
