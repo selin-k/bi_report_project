@@ -1,58 +1,54 @@
-# Development Backlog Document for Solar Panel Performance Monitoring BI Dashboard
+# Development Backlog Document for Solar Panel BI Dashboard ETL Pipeline
 
 ## PythonPackageName
 
-```python
-solar_panel_monitoring
-```
+solar_panel_dashboard
 
 ## DependenciesandTools
 
-- ['azure-synapse-analytics', 'For data warehousing and big data analytics.']
-- ['azure-kubernetes-service', 'For deploying containerized microservices.']
-- ['python-dotenv', 'To manage environment variables for configuration.']
-- ['requests', 'To make HTTP requests between microservices.']
-- ['pandas', 'For data manipulation and analysis.']
+- ['pandas', 'For data loading and manipulation tasks such as data ingestion, curation, and transformation.']
 - ['numpy', 'For numerical operations on data.']
-- ['plotly', 'For creating interactive visualizations.']
-- ['powerbi-embedded', 'For embedding Power BI visualizations.']
-- ['azure-data-factory', 'For orchestrating and automating data flows.']
+- ['sqlalchemy', 'To interface with the database and perform SQL operations.']
+- ['azure-storage-blob', 'To store and retrieve data from Azure Blob Storage.']
+- ['azure-synapse-spark', 'To process data using Azure Synapse Analytics spark pools.']
+- ['flask', 'To create the web application and API endpoints for microservices.']
+- ['plotly', 'To create interactive visualizations for the BI dashboard.']
+- ['dash', 'To build the interactive web-based dashboard that integrates with Plotly charts.']
+- ['gunicorn', 'To serve the Flask application in a production environment.']
 
 ## RequiredPythonPackages
 
-azure-synapse-analytics==0.5.0
-azure-kubernetes-service==1.0.0
-python-dotenv==0.19.2
-requests==2.26.0
 pandas==1.3.4
 numpy==1.21.4
+sqlalchemy==1.4.27
+azure-storage-blob==12.9.0
+azure-synapse-spark==0.1.0
+flask==2.0.2
 plotly==5.3.1
-powerbi-embedded==1.1.0
-azure-data-factory==0.3.0
+dash==2.0.0
+gunicorn==20.1.0
 
 
 ## TaskList
 
-- ['main.py', 'Serves as the entry point for the program. Orchestrates the flow of the program according to the sequence diagram in the technical design document.']
-- ['config.yaml', 'Contains all the data source configuration information required by the data_ingestion service.']
-- ['data_ingestion_service.py', 'Create a microservice for ingesting data from CSV files into Azure Synapse Analytics. Include CSV validation and schema checks.']
-- ['data_curation_service.py', 'Develop a microservice to handle data quality issues such as missing values and inconsistencies. Implement imputation and normalization methods.']
-- ['data_transformation_service.py', 'Build a microservice to apply business logic to curated data, calculate KPIs, and populate fact and dimension tables in the conformed data store.']
-- ['data_visualization_service.py', 'Implement a microservice to retrieve conformed data and generate interactive visualizations using Plotly or Power BI Embedded.']
-- ['orchestration_service.py', 'Set up the orchestration layer using Azure Data Factory to coordinate the execution of microservices and manage data flow.']
-- ['data_models.py', 'Define all the table structures and related functions for the FACT and DIM tables.']
+- ['data_ingestion_service.py', 'Implements the DataIngestionService class. This class will handle reading data from the CSV file, validating the format, and ensuring data integrity. It will also support incremental data loads.']
+- ['data_curation_service.py', 'Implements the DataCurationService class. This class will clean and prepare the ingested data, including handling missing values, deduplication, and schema validation.']
+- ['data_transformation_service.py', 'Implements the DataTransformationService class. This class will apply business logic to calculate KPIs such as average energy output, performance comparison, and failure rates.']
+- ['orchestration_service.py', 'Implements the OrchestrationService class. This class will manage the workflow of the ETL pipeline, schedule tasks, handle service dependencies, and provide monitoring and logging.']
+- ['dashboard_app.py', 'Contains the logic for the BI dashboard application. It will use the processed data to provide real-time and historical visualizations using Plotly and Dash.']
+- ['config.py', 'Contains configuration settings for the ETL pipeline, such as file paths, database connection strings, and API endpoint URLs.']
+- ['requirements.txt', 'Lists all the necessary Python packages and their versions required for the project.']
 
 ## FullAPISpec
 
-```python
 openapi: 3.0.0
 info:
-  title: "Solar Panel Performance Monitoring API"
+  title: "Solar Panel Data Services"
   version: "1.0.0"
 paths:
-  /ingest_data:
+  /ingest:
     post:
-      summary: "Ingest solar sensor data"
+      summary: "Ingest data from the solar panel CSV data source"
       requestBody:
         required: true
         content:
@@ -60,12 +56,12 @@ paths:
             schema:
               type: object
               properties:
-                file_path:
+                source_path:
                   type: string
       responses:
         '200':
           description: "Data ingestion successful"
-  /curate_data:
+  /curate:
     post:
       summary: "Curate ingested data"
       requestBody:
@@ -75,16 +71,14 @@ paths:
             schema:
               type: object
               properties:
-                data:
-                  type: array
-                  items:
-                    type: object
+                raw_data:
+                  type: object
       responses:
         '200':
           description: "Data curation successful"
-  /transform_data:
+  /transform:
     post:
-      summary: "Transform curated data into KPIs and performance metrics"
+      summary: "Transform curated data into meaningful KPIs"
       requestBody:
         required: true
         content:
@@ -92,26 +86,10 @@ paths:
             schema:
               type: object
               properties:
-                data:
-                  type: array
-                  items:
-                    type: object
+                curated_data:
+                  type: object
       responses:
         '200':
           description: "Data transformation successful"
-  /visualize_data:
-    get:
-      summary: "Retrieve visualizations for the BI Dashboard"
-      parameters:
-        - in: query
-          name: panel_id
-          schema:
-            type: integer
-          description: "The ID of the solar panel"
-      responses:
-        '200':
-          description: "Data visualization successful"
-        '404':
-          description: "Visualization not found for the specified panel ID"
-```
+
 

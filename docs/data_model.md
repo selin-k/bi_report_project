@@ -1,4 +1,4 @@
-# Data Model Design Document for Solar Panel Performance Monitoring BI Dashboard
+# Data Model Design Document for Solar Panel BI Dashboard
 
 ## Standards
 
@@ -6,67 +6,59 @@ Data Modeling: IEC 61970 for Energy Management System Integration, Data Models: 
 
 ## LogicalDataModel
 
-The logical data model is designed to support the interactive BI Dashboard for monitoring and analyzing solar panel performance. It includes fact tables for capturing transactional data and dimension tables for contextual data.
+The logical data model is designed to support the interactive BI Dashboard for analyzing solar panel data. It includes fact tables for recording energy outputs and events, and dimension tables for solar panel attributes, time, and failure reasons.
 
 ## FactTables
 
-- {'TableName': 'FACT_ENERGY_OUTPUT', 'Fields': [{'FieldName': 'EnergyOutputID', 'DataType': 'INT', 'IsPrimaryKey': True, 'IsForeignKey': False}, {'FieldName': 'PanelID', 'DataType': 'INT', 'IsPrimaryKey': False, 'IsForeignKey': True}, {'FieldName': 'Timestamp', 'DataType': 'DATETIME', 'IsPrimaryKey': False, 'IsForeignKey': False}, {'FieldName': 'EnergyProduced', 'DataType': 'FLOAT', 'IsPrimaryKey': False, 'IsForeignKey': False}, {'FieldName': 'WeatherConditionID', 'DataType': 'INT', 'IsPrimaryKey': False, 'IsForeignKey': True}], 'Description': 'Records the energy output of each solar panel with a timestamp and weather conditions.'}
-- {'TableName': 'FACT_PANEL_FAILURES', 'Fields': [{'FieldName': 'PanelFailureID', 'DataType': 'INT', 'IsPrimaryKey': True, 'IsForeignKey': False}, {'FieldName': 'PanelID', 'DataType': 'INT', 'IsPrimaryKey': False, 'IsForeignKey': True}, {'FieldName': 'FailureTimestamp', 'DataType': 'DATETIME', 'IsPrimaryKey': False, 'IsForeignKey': False}, {'FieldName': 'FailureTypeID', 'DataType': 'INT', 'IsPrimaryKey': False, 'IsForeignKey': True}, {'FieldName': 'IsResolved', 'DataType': 'BIT', 'IsPrimaryKey': False, 'IsForeignKey': False}], 'Description': 'Tracks incidents of solar panel failures, their types, and resolution status.'}
+- {'TableName': 'FACT_ENERGY_OUTPUT', 'Fields': [{'FieldName': 'EnergyOutputID', 'DataType': 'INT', 'IsPrimaryKey': True, 'IsForeignKey': False}, {'FieldName': 'PanelID', 'DataType': 'INT', 'IsPrimaryKey': False, 'IsForeignKey': True}, {'FieldName': 'TimeID', 'DataType': 'INT', 'IsPrimaryKey': False, 'IsForeignKey': True}, {'FieldName': 'EnergyOutput', 'DataType': 'FLOAT', 'IsPrimaryKey': False, 'IsForeignKey': False}], 'Description': 'Records the energy output of each solar panel at various intervals.'}
+- {'TableName': 'FACT_PANEL_FAILURES', 'Fields': [{'FieldName': 'FailureID', 'DataType': 'INT', 'IsPrimaryKey': True, 'IsForeignKey': False}, {'FieldName': 'PanelID', 'DataType': 'INT', 'IsPrimaryKey': False, 'IsForeignKey': True}, {'FieldName': 'TimeID', 'DataType': 'INT', 'IsPrimaryKey': False, 'IsForeignKey': True}, {'FieldName': 'FailureReasonID', 'DataType': 'INT', 'IsPrimaryKey': False, 'IsForeignKey': True}, {'FieldName': 'IsUnderperforming', 'DataType': 'BIT', 'IsPrimaryKey': False, 'IsForeignKey': False}], 'Description': 'Logs failures and underperformance of solar panels, with references to the time and reason for failure.'}
 
 ## DimensionTables
 
-- {'TableName': 'DIM_PANEL', 'Fields': [{'FieldName': 'PanelID', 'DataType': 'INT', 'IsPrimaryKey': True, 'IsForeignKey': False}, {'FieldName': 'PanelType', 'DataType': 'VARCHAR', 'IsPrimaryKey': False, 'IsForeignKey': False}, {'FieldName': 'InstallationDate', 'DataType': 'DATE', 'IsPrimaryKey': False, 'IsForeignKey': False}, {'FieldName': 'Capacity', 'DataType': 'FLOAT', 'IsPrimaryKey': False, 'IsForeignKey': False}, {'FieldName': 'LocationID', 'DataType': 'INT', 'IsPrimaryKey': False, 'IsForeignKey': True}], 'Description': 'Contains information about each solar panel, including type, installation date, and capacity.'}
-- {'TableName': 'DIM_WEATHER_CONDITION', 'Fields': [{'FieldName': 'WeatherConditionID', 'DataType': 'INT', 'IsPrimaryKey': True, 'IsForeignKey': False}, {'FieldName': 'Temperature', 'DataType': 'FLOAT', 'IsPrimaryKey': False, 'IsForeignKey': False}, {'FieldName': 'SunlightIntensity', 'DataType': 'FLOAT', 'IsPrimaryKey': False, 'IsForeignKey': False}, {'FieldName': 'WeatherDescription', 'DataType': 'VARCHAR', 'IsPrimaryKey': False, 'IsForeignKey': False}], 'Description': 'Describes the weather conditions, including temperature and sunlight intensity.'}
-- {'TableName': 'DIM_FAILURE_TYPE', 'Fields': [{'FieldName': 'FailureTypeID', 'DataType': 'INT', 'IsPrimaryKey': True, 'IsForeignKey': False}, {'FieldName': 'FailureDescription', 'DataType': 'VARCHAR', 'IsPrimaryKey': False, 'IsForeignKey': False}, {'FieldName': 'PotentialCause', 'DataType': 'VARCHAR', 'IsPrimaryKey': False, 'IsForeignKey': False}], 'Description': 'Classifies types of solar panel failures and their potential causes.'}
-- {'TableName': 'DIM_LOCATION', 'Fields': [{'FieldName': 'LocationID', 'DataType': 'INT', 'IsPrimaryKey': True, 'IsForeignKey': False}, {'FieldName': 'Country', 'DataType': 'VARCHAR', 'IsPrimaryKey': False, 'IsForeignKey': False}, {'FieldName': 'Region', 'DataType': 'VARCHAR', 'IsPrimaryKey': False, 'IsForeignKey': False}, {'FieldName': 'GPS_Coordinates', 'DataType': 'VARCHAR', 'IsPrimaryKey': False, 'IsForeignKey': False}], 'Description': 'Provides geographical information of solar panel installations.'}
+- {'TableName': 'DIM_SOLAR_PANEL', 'Fields': [{'FieldName': 'PanelID', 'DataType': 'INT', 'IsPrimaryKey': True, 'IsForeignKey': False}, {'FieldName': 'PanelType', 'DataType': 'VARCHAR', 'IsPrimaryKey': False, 'IsForeignKey': False}, {'FieldName': 'InstallationDate', 'DataType': 'DATE', 'IsPrimaryKey': False, 'IsForeignKey': False}, {'FieldName': 'Location', 'DataType': 'VARCHAR', 'IsPrimaryKey': False, 'IsForeignKey': False}], 'Description': 'Contains attributes of each solar panel, including type and location.'}
+- {'TableName': 'DIM_TIME', 'Fields': [{'FieldName': 'TimeID', 'DataType': 'INT', 'IsPrimaryKey': True, 'IsForeignKey': False}, {'FieldName': 'DateTime', 'DataType': 'DATETIME', 'IsPrimaryKey': False, 'IsForeignKey': False}, {'FieldName': 'Hour', 'DataType': 'INT', 'IsPrimaryKey': False, 'IsForeignKey': False}, {'FieldName': 'Day', 'DataType': 'INT', 'IsPrimaryKey': False, 'IsForeignKey': False}, {'FieldName': 'Month', 'DataType': 'INT', 'IsPrimaryKey': False, 'IsForeignKey': False}, {'FieldName': 'Year', 'DataType': 'INT', 'IsPrimaryKey': False, 'IsForeignKey': False}], 'Description': 'Time dimension table for recording the date and time of energy outputs and failures.'}
+- {'TableName': 'DIM_FAILURE_REASON', 'Fields': [{'FieldName': 'FailureReasonID', 'DataType': 'INT', 'IsPrimaryKey': True, 'IsForeignKey': False}, {'FieldName': 'ReasonDescription', 'DataType': 'VARCHAR', 'IsPrimaryKey': False, 'IsForeignKey': False}], 'Description': 'Describes the reasons for solar panel failures.'}
 
 ## ERDiagram
 
 
 ```mermaid
 erDiagram
-    FACT_ENERGY_OUTPUT ||--o{ DIM_PANEL : contains
-    FACT_ENERGY_OUTPUT ||--o{ DIM_WEATHER_CONDITION : contains
-    FACT_PANEL_FAILURES ||--o{ DIM_PANEL : contains
-    FACT_PANEL_FAILURES ||--o{ DIM_FAILURE_TYPE : contains
-    DIM_PANEL ||--o{ DIM_LOCATION : located_in
+    DIM_SOLAR_PANEL ||--o{ FACT_ENERGY_OUTPUT : records
+    DIM_SOLAR_PANEL ||--o{ FACT_PANEL_FAILURES : logs
+    DIM_TIME ||--o{ FACT_ENERGY_OUTPUT : records
+    DIM_TIME ||--o{ FACT_PANEL_FAILURES : logs
+    DIM_FAILURE_REASON ||--o{ FACT_PANEL_FAILURES : categorizes
+    DIM_SOLAR_PANEL {
+        int PanelID
+        string PanelType
+        date InstallationDate
+        string Location
+    }
     FACT_ENERGY_OUTPUT {
-        int EnergyOutputID PK
-        int PanelID FK
-        datetime Timestamp
-        float EnergyProduced
-        int WeatherConditionID FK
+        int EnergyOutputID
+        int PanelID
+        int TimeID
+        float EnergyOutput
     }
     FACT_PANEL_FAILURES {
-        int PanelFailureID PK
-        int PanelID FK
-        datetime FailureTimestamp
-        int FailureTypeID FK
-        bit IsResolved
+        int FailureID
+        int PanelID
+        int TimeID
+        int FailureReasonID
+        bit IsUnderperforming
     }
-    DIM_PANEL {
-        int PanelID PK
-        varchar PanelType
-        date InstallationDate
-        float Capacity
-        int LocationID FK
+    DIM_TIME {
+        int TimeID
+        datetime DateTime
+        int Hour
+        int Day
+        int Month
+        int Year
     }
-    DIM_WEATHER_CONDITION {
-        int WeatherConditionID PK
-        float Temperature
-        float SunlightIntensity
-        varchar WeatherDescription
-    }
-    DIM_FAILURE_TYPE {
-        int FailureTypeID PK
-        varchar FailureDescription
-        varchar PotentialCause
-    }
-    DIM_LOCATION {
-        int LocationID PK
-        varchar Country
-        varchar Region
-        varchar GPS_Coordinates
+    DIM_FAILURE_REASON {
+        int FailureReasonID
+        string ReasonDescription
     }
 ```
             

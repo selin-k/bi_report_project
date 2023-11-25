@@ -1,70 +1,69 @@
-# Business Intelligence Dashboard for Solar Panel Performance Monitoring
+# Requirements Document for Interactive BI Dashboard for Solar Panel Data Analysis
 
 ## Purpose
 
-The purpose of this document is to outline the requirements for the development of an interactive Business Intelligence (BI) Dashboard that will enable users to monitor and analyze the performance of solar panels.
+The purpose of this document is to outline the requirements for an interactive Business Intelligence (BI) dashboard that will enable the client to monitor current energy output, identify underperforming solar panels, and analyze panel failures and their frequency.
 
 ## Assumptions
 
-- The application will be developed to support daily data processing.
-- Users of the dashboard will have general business knowledge without requiring technical expertise in data analysis.
+- The data provided in the CSV file represents the 'current' state of the solar panels.
+- The 'State' column in the CSV file indicates the operational status of the solar panels, which can be used to determine failures.
 
 ## FunctionalRequirements
 
-- The application should provide real-time monitoring of current energy output.
-- The application should identify underperforming solar panels and provide insights into potential causes.
-- The application should predict potential solar panel failures and their frequency.
+- The dashboard should display the current energy output of the solar panels.
+- The dashboard should allow users to identify underperforming solar panels by comparing individual outputs to the average output.
+- The dashboard should provide insights into the frequency and reasons for solar panel failures.
+- The dashboard should be interactive, allowing users to drill down into specific data points for detailed analysis.
 
 ## NonFunctionalRequirements
 
-- The dashboard will adhere to the IEC61970 standard for the Energy Industry.
-- The dashboard will be designed for use by general business users, ensuring ease of use and accessibility.
-- The dashboard will be capable of handling CSV data formats and ensure data integrity during processing.
+- The dashboard should be web-based and accessible through modern web browsers.
+- The dashboard should be responsive and work on various devices including desktops, tablets, and smartphones.
+- The dashboard should perform efficiently with minimal load times.
 
 ## DataSources
 
-- Solar sensor data will be sourced from a CSV file located at /project_name/data/solar_sensors.csv.
+- Solar panel sensor data will be sourced from the provided CSV file located at /Users/selinkayay/appgenpro/data/solar_sensors.csv.
 
 ## DataCuration
 
-- Missing values will be handled by appropriate imputation methods to maintain data quality.
-- Data normalization techniques will be applied where necessary to ensure consistency in analysis.
+- Missing values will be identified and handled appropriately, either by imputation or exclusion, based on the nature of the data.
+- Data validation checks will be implemented to ensure accuracy and consistency.
 
 ## DataTransformation
 
-- KPIs will be defined based on industry standards and client input, including average daily production, total capacity, and efficiency metrics.
-- Metrics logic will be developed to calculate performance based on the provided solar sensor data fields.
+- KPIs for average energy output, performance comparison, and failure rates will be defined and calculated.
+- Data will be aggregated and summarized as needed to support dashboard visualizations.
 
 ## DataVisualization
 
-- The dashboard will display daily, weekly, and monthly electricity production trends.
-- The dashboard will include visualizations that show production variations with changing weather or temperature.
-- The dashboard will allow comparison of different panels' performance and show capacity utilization.
-- The dashboard will correlate factors like temperature or sunlight intensity with panel efficiency.
-- The dashboard will include interactive features such as drill-down capabilities and hover-over details.
+- Real-time visualization of current energy output.
+- Comparative visualizations to highlight underperforming solar panels.
+- Visualizations to represent the frequency and patterns of panel failures.
 
 ## DataSecurityAndPrivacy
 
-- All sensitive data will be handled in compliance with relevant data protection regulations.
-- Data will be stored securely with encryption and access controls in place.
+- All data will be handled in compliance with relevant data protection regulations.
+- User access to the dashboard will be controlled through authentication and authorization mechanisms.
 
 ## Orchestration
 
-- The application will be orchestrated to ensure daily data processing and updating of the dashboard.
+- The dashboard will be updated at regular intervals to reflect the most recent data.
+- Automated data pipelines will be established for data extraction, transformation, and loading (ETL).
 
 ## UIRequirements
 
-- The application will be accessible via a web interface.
-- The UI will allow users to select specific time periods, panels, or metrics for analysis.
-- The UI will provide global filters for time periods, geographic locations, and panel types.
+- The dashboard will have an intuitive and user-friendly interface.
+- The UI will include interactive elements such as filters, dropdowns, and drill-down capabilities.
 
 ## UserStories
 
-- As a business user, I want to view the current energy output so that I can monitor the real-time performance of solar panels.
-- As a maintenance manager, I want to identify underperforming solar panels and understand why they are not performing well to schedule maintenance or replacements.
-- As an operations analyst, I want to predict when solar panels might fail so that I can proactively manage panel maintenance and reduce downtime.
+- As a solar farm operator, I want to see the current energy output so that I can assess the productivity of my solar panels.
+- As a maintenance manager, I want to identify underperforming solar panels to determine if they require maintenance or replacement.
+- As a data analyst, I want to analyze the reasons for panel failures to improve the reliability and efficiency of the solar panel array.
 
 ## AnythingUnclear
 
-Everything is clear.
+The client has provided all the necessary clarifications for the requirements document.
 
