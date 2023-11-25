@@ -1,62 +1,102 @@
-# Technical Design Document for Solar Panel BI Dashboard ETL Pipeline
+# Technical Design Document for Local Solar Panel BI Dashboard ETL Pipeline
 
 ## HighLevelSystemDesign
 
-The ETL pipeline is designed to support the interactive BI Dashboard for solar panel data analysis. The architecture leverages a microservices approach, with each service responsible for a segment of the ETL process. These services will be implemented using Python and exposed as RESTful APIs, orchestrated using Azure Kubernetes Service (AKS) or Azure Synapse Analytics spark pool, depending on deployment preferences.
+The solution architecture is designed for local execution, leveraging Python and its libraries such as pandas for data manipulation and Plotly for interactive visualizations. The application will consist of a series of Python classes that encapsulate the functionality for data ingestion, curation, transformation, and visualization.
 
 ## DataIngestion
 
-The data_ingestion microservice is responsible for extracting solar panel sensor data from the provided CSV file. It will validate the file format and ensure data integrity during ingestion. The service will be capable of handling incremental data loads to process new data as it becomes available.
+The DataIngestion class will be responsible for loading the solar sensor data from the local CSV file using pandas. It will read the data into a pandas DataFrame for further processing.
 
 ## DataCuration
 
-The data_curation microservice will clean and prepare the ingested data for analysis. This includes handling missing values, deduplication, and validation against predefined schemas. The curated data will be stored in a structured format suitable for transformation and analysis.
+The DataCuration class will perform data validation and normalization on the ingested data. It will ensure that there are no missing or corrupt values and that the data is consistent. The curated data will be stored in a pandas DataFrame.
 
 ## DataTransformation
 
-The data_transformation microservice will apply business logic to the curated data to calculate KPIs such as average energy output, performance comparison, and failure rates. The transformed data will be structured according to the logical data model and stored in Azure Synapse Analytics dedicated pool for efficient querying.
+The DataTransformation class will apply business logic to calculate the KPIs defined in the requirements document. It will transform the curated data into the format specified by the logical data model, using classes that represent the fact and dimension tables.
 
 ## DataVisualization
 
-While not directly responsible for data visualization, the ETL pipeline will ensure that the data is readily available and optimized for the BI dashboard. The dashboard will utilize the processed data to provide real-time and historical visualizations of energy output, panel performance, and failure analysis.
+The DataVisualization class will use the transformed data to generate the required visualizations such as time series graphs, heatmaps, pie charts, and scatter plots using Plotly. These visualizations will be interactive and can be viewed in a web browser.
 
 ## Orchestration
 
-The orchestration layer will manage the ETL pipeline's workflow, scheduling tasks, and ensuring data is processed in a timely manner. It will handle dependencies between microservices and provide monitoring and logging capabilities to track the pipeline's performance and health.
+The orchestration of the ETL pipeline will be managed by a main driver script that sequentially executes the methods of the DataIngestion, DataCuration, DataTransformation, and DataVisualization classes. Error handling will be implemented to log and manage any issues that arise during execution.
 
 ## ClassDiagrams
 
 ```mermaid
 classDiagram
-    class DataIngestionService {
-        +ingest_data(source_path: str) -> None
+    class DataIngestion {
+        +load_data(file_path: str) DataFrame
     }
-    class DataCurationService {
-        +curate_data(raw_data: DataFrame) -> DataFrame
+    class DataCuration {
+        +validate_data(data: DataFrame) DataFrame
+        +normalize_data(data: DataFrame) DataFrame
     }
-    class DataTransformationService {
-        +transform_data(curated_data: DataFrame) -> DataFrame
+    class DataTransformation {
+        +transform_data(data: DataFrame) DataFrame
     }
-    class OrchestrationService {
-        +orchestrate_etl() -> None
+    class DataVisualization {
+        +generate_visuals(data: DataFrame) None
     }
-    DataIngestionService --> DataCurationService: passes raw data
-    DataCurationService --> DataTransformationService: passes curated data
-    DataTransformationService --> OrchestrationService: triggers orchestration
+    class FACT_SOLAR_OUTPUT {
+        int OutputID
+        int PanelID
+        datetime Timestamp
+        float EnergyOutput
+        int WeatherConditionID
+        int FailureID
+        +calculate_kpis() None
+    }
+    class DIM_PANEL {
+        int PanelID
+        string PanelType
+        date InstallationDate
+        string Location
+    }
+    class DIM_WEATHER_CONDITION {
+        int WeatherConditionID
+        float Temperature
+        float WindSpeed
+        float Humidity
+        float Irradiance
+    }
+    class DIM_FAILURE {
+        int FailureID
+        string FailureType
+        string FailureDescription
+        date FailureDate
+    }
+    DataIngestion -- DIM_PANEL
+    DataIngestion -- DIM_WEATHER_CONDITION
+    DataIngestion -- DIM_FAILURE
+    DataCuration -- DIM_PANEL
+    DataCuration -- DIM_WEATHER_CONDITION
+    DataCuration -- DIM_FAILURE
+    DataTransformation -- FACT_SOLAR_OUTPUT
+    DataVisualization -- FACT_SOLAR_OUTPUT
 ```
 
 ## ProgramFlow
 
 ```mermaid
 sequenceDiagram
-    participant Orchestrator as OrchestrationService
-    participant Ingestion as DataIngestionService
-    participant Curation as DataCurationService
-    participant Transformation as DataTransformationService
+    participant Main as Main
+    participant Ingestion as DataIngestion
+    participant Curation as DataCuration
+    participant Transformation as DataTransformation
+    participant Visualization as DataVisualization
+    participant FACT_SOLAR_OUTPUT as FACT_SOLAR_OUTPUT
+    participant DIM_PANEL as DIM_PANEL
+    participant DIM_WEATHER_CONDITION as DIM_WEATHER_CONDITION
+    participant DIM_FAILURE as DIM_FAILURE
 
-    Orchestrator->>Ingestion: ingest_data('/Users/selinkayay/appgenpro/data/solar_sensors.csv')
-    Ingestion-->>Curation: pass raw data
-    Curation-->>Transformation: pass curated data
-    Transformation-->>Orchestrator: signal completion
+    Main->>Ingestion: Load CSV
+    Ingestion-->>Curation: Validate and Normalize Data
+    Curation-->>Transformation: Transform to Data Model
+    Transformation-->>FACT_SOLAR_OUTPUT: Calculate KPIs
+    FACT_SOLAR_OUTPUT-->>Visualization: Generate Visualizations
 ```
 

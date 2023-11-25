@@ -1,4 +1,4 @@
-# Development Backlog Document for Solar Panel BI Dashboard ETL Pipeline
+# Development Backlog Document for Solar Panel BI Dashboard
 
 ## PythonPackageName
 
@@ -7,48 +7,39 @@ solar_panel_dashboard
 ## DependenciesandTools
 
 - ['pandas', 'For data loading and manipulation tasks such as data ingestion, curation, and transformation.']
-- ['numpy', 'For numerical operations on data.']
-- ['sqlalchemy', 'To interface with the database and perform SQL operations.']
-- ['azure-storage-blob', 'To store and retrieve data from Azure Blob Storage.']
-- ['azure-synapse-spark', 'To process data using Azure Synapse Analytics spark pools.']
-- ['flask', 'To create the web application and API endpoints for microservices.']
-- ['plotly', 'To create interactive visualizations for the BI dashboard.']
-- ['dash', 'To build the interactive web-based dashboard that integrates with Plotly charts.']
-- ['gunicorn', 'To serve the Flask application in a production environment.']
+- ['plotly', 'To create interactive visualizations for the dashboard.']
+- ['flask', 'To serve the dashboard as a web application.']
+- ['python-dotenv', 'To manage environment variables for configuration settings.']
 
 ## RequiredPythonPackages
 
 pandas==1.3.4
-numpy==1.21.4
-sqlalchemy==1.4.27
-azure-storage-blob==12.9.0
-azure-synapse-spark==0.1.0
+plotly==5.5.0
 flask==2.0.2
-plotly==5.3.1
-dash==2.0.0
-gunicorn==20.1.0
+python-dotenv==0.19.2
 
 
 ## TaskList
 
-- ['data_ingestion_service.py', 'Implements the DataIngestionService class. This class will handle reading data from the CSV file, validating the format, and ensuring data integrity. It will also support incremental data loads.']
-- ['data_curation_service.py', 'Implements the DataCurationService class. This class will clean and prepare the ingested data, including handling missing values, deduplication, and schema validation.']
-- ['data_transformation_service.py', 'Implements the DataTransformationService class. This class will apply business logic to calculate KPIs such as average energy output, performance comparison, and failure rates.']
-- ['orchestration_service.py', 'Implements the OrchestrationService class. This class will manage the workflow of the ETL pipeline, schedule tasks, handle service dependencies, and provide monitoring and logging.']
-- ['dashboard_app.py', 'Contains the logic for the BI dashboard application. It will use the processed data to provide real-time and historical visualizations using Plotly and Dash.']
-- ['config.py', 'Contains configuration settings for the ETL pipeline, such as file paths, database connection strings, and API endpoint URLs.']
-- ['requirements.txt', 'Lists all the necessary Python packages and their versions required for the project.']
+- ['main.py', 'Contains the orchestration logic for the ETL pipeline and serves the dashboard. It will call the classes and methods in sequence as per the program flow defined in the technical design document.']
+- ['data_ingestion.py', 'Implements the DataIngestion class for loading the solar sensor data from the CSV file. It will include a method load_data(file_path: str) that returns a pandas DataFrame.']
+- ['data_curation.py', 'Implements the DataCuration class for validating and normalizing the ingested data. It will include methods validate_data(data: DataFrame) and normalize_data(data: DataFrame) that each return a pandas DataFrame.']
+- ['data_transformation.py', 'Implements the DataTransformation class for applying business logic to calculate KPIs. It will include a method transform_data(data: DataFrame) that returns a pandas DataFrame.']
+- ['data_visualization.py', 'Implements the DataVisualization class for generating interactive visualizations using Plotly. It will include a method generate_visuals(data: DataFrame) that does not return a value but generates the dashboard components.']
+- ['models.py', 'Defines the classes FACT_SOLAR_OUTPUT, DIM_PANEL, DIM_WEATHER_CONDITION, and DIM_FAILURE that represent the fact and dimension tables. Each class will have attributes as per the class diagram and methods for any required calculations or data manipulations.']
+- ['dashboard.py', 'Contains the Flask application to serve the dashboard. It will define routes for the dashboard and any necessary API endpoints for interaction.']
+- ['config.py', 'Contains configuration settings for the application, such as file paths and database connection strings, which can be loaded from environment variables or a .env file.']
 
 ## FullAPISpec
 
 openapi: 3.0.0
 info:
-  title: "Solar Panel Data Services"
+  title: "Solar Panel Dashboard API"
   version: "1.0.0"
 paths:
-  /ingest:
+  /data/ingest:
     post:
-      summary: "Ingest data from the solar panel CSV data source"
+      summary: "Ingest data from the solar_sensors.csv file"
       requestBody:
         required: true
         content:
@@ -56,14 +47,14 @@ paths:
             schema:
               type: object
               properties:
-                source_path:
+                file_path:
                   type: string
       responses:
         '200':
           description: "Data ingestion successful"
-  /curate:
+  /data/curate:
     post:
-      summary: "Curate ingested data"
+      summary: "Validate and normalize ingested data"
       requestBody:
         required: true
         content:
@@ -71,14 +62,15 @@ paths:
             schema:
               type: object
               properties:
-                raw_data:
+                data:
                   type: object
+                  additionalProperties: true
       responses:
         '200':
           description: "Data curation successful"
-  /transform:
+  /data/transform:
     post:
-      summary: "Transform curated data into meaningful KPIs"
+      summary: "Transform curated data into the data model"
       requestBody:
         required: true
         content:
@@ -86,10 +78,17 @@ paths:
             schema:
               type: object
               properties:
-                curated_data:
+                data:
                   type: object
+                  additionalProperties: true
       responses:
         '200':
           description: "Data transformation successful"
+  /visualize:
+    get:
+      summary: "Generate visualizations for the dashboard"
+      responses:
+        '200':
+          description: "Visualizations generated successfully"
 
 

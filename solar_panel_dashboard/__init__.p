@@ -1,0 +1,1 @@
+# filename: solar_panel_dashboard/__init__.py
