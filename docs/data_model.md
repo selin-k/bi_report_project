@@ -1,4 +1,4 @@
-# Solar Panel Performance BI Dashboard Data Model Documentation
+# Data Model Design Document for Solar Panel BI Dashboard
 
 ## Standards
 
@@ -6,31 +6,40 @@ IEC 61970 for Energy Management System Integration
 
 ## LogicalDataModel
 
-The logical data model is designed to support the BI Dashboard requirements for monitoring and analyzing solar panel performance. It includes entities for Solar Panels, Performance Metrics, and Environmental Conditions, with relationships that allow for the analysis of energy output, underperformance, and failure rates.
+The logical data model for the Solar Panel BI Dashboard includes entities such as Solar_Panel, Energy_Output, Panel_Failure, and Environmental_Factor. Each entity has attributes that capture the necessary details for analysis and reporting within the BI Dashboard.
 
 ## ERDiagram
 
 
 ```mermaid
-erDiagram
-    SOLAR_PANEL ||--o{ PERFORMANCE_METRICS : measures
-    SOLAR_PANEL ||--o{ ENVIRONMENTAL_CONDITIONS : experiences
+ERDiagram
+    SOLAR_PANEL ||--o{ ENERGY_OUTPUT : generates
+    SOLAR_PANEL ||--o{ PANEL_FAILURE : experiences
+    SOLAR_PANEL ||--o{ ENVIRONMENTAL_FACTOR : influenced_by
     SOLAR_PANEL {
-        string panelID
-        string state
+        string panel_id PK
+        string location
+        string type
     }
-    PERFORMANCE_METRICS {
-        float S1_Amp
-        float S2_Amp
-        float S1_Volt
-        float S2_Volt
-        float S1_Power_kwh
-        float S2_Power_kwh
+    ENERGY_OUTPUT {
+        string output_id PK
+        string panel_id FK
+        datetime timestamp
+        float kWh
     }
-    ENVIRONMENTAL_CONDITIONS {
-        float Light_kiloLux
-        float Temp_degC
-        string Weather
+    PANEL_FAILURE {
+        string failure_id PK
+        string panel_id FK
+        string failure_type
+        datetime failure_time
+        int count
+    }
+    ENVIRONMENTAL_FACTOR {
+        string factor_id PK
+        string panel_id FK
+        datetime timestamp
+        float temperature
+        float light_intensity
     }
 ```
 
