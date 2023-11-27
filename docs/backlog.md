@@ -1,45 +1,50 @@
-# Development Backlog Document for Solar Panel BI Dashboard
+# Development Backlog Document
 
 ## PythonPackageName
 
-solar_panel_dashboard
+solar_bi_dashboard
 
 ## DependenciesandTools
 
 - ['pandas', 'For data loading and manipulation tasks such as data ingestion, curation, and transformation.']
-- ['plotly', 'To create interactive visualizations for the dashboard.']
-- ['flask', 'To serve the dashboard as a web application.']
-- ['python-dotenv', 'To manage environment variables for configuration settings.']
+- ['sqlalchemy', 'To interface with the database and perform SQL operations.']
+- ['matplotlib', 'For creating visualizations during the development phase.']
+- ['streamlit', 'For creating the interactive BI dashboard.']
+- ['numpy', 'For numerical operations on data.']
+- ['pyyaml', 'To load the configuration file, config.yaml, into a singleton Config class for easy access.']
 
 ## RequiredPythonPackages
 
 pandas==1.3.4
-plotly==5.5.0
-flask==2.0.2
-python-dotenv==0.19.2
+sqlalchemy==1.4.27
+matplotlib==3.5.0
+streamlit==1.2.0
+numpy==1.21.4
+PyYAML==6.0
 
 
 ## TaskList
 
-- ['main.py', 'Contains the orchestration logic for the ETL pipeline and serves the dashboard. It will call the classes and methods in sequence as per the program flow defined in the technical design document.']
-- ['data_ingestion.py', 'Implements the DataIngestion class for loading the solar sensor data from the CSV file. It will include a method load_data(file_path: str) that returns a pandas DataFrame.']
-- ['data_curation.py', 'Implements the DataCuration class for validating and normalizing the ingested data. It will include methods validate_data(data: DataFrame) and normalize_data(data: DataFrame) that each return a pandas DataFrame.']
-- ['data_transformation.py', 'Implements the DataTransformation class for applying business logic to calculate KPIs. It will include a method transform_data(data: DataFrame) that returns a pandas DataFrame.']
-- ['data_visualization.py', 'Implements the DataVisualization class for generating interactive visualizations using Plotly. It will include a method generate_visuals(data: DataFrame) that does not return a value but generates the dashboard components.']
-- ['models.py', 'Defines the classes FACT_SOLAR_OUTPUT, DIM_PANEL, DIM_WEATHER_CONDITION, and DIM_FAILURE that represent the fact and dimension tables. Each class will have attributes as per the class diagram and methods for any required calculations or data manipulations.']
-- ['dashboard.py', 'Contains the Flask application to serve the dashboard. It will define routes for the dashboard and any necessary API endpoints for interaction.']
-- ['config.py', 'Contains configuration settings for the application, such as file paths and database connection strings, which can be loaded from environment variables or a .env file.']
+- ['main.py', 'Contains the orchestration logic for creating the dashboard with curated data and metrics. It will call the necessary services in the correct order as defined in the program flow.']
+- ['config/config.yaml', 'Contains the configuration for the data ingestion framework. The configurations include paths to data sources, database connection strings, and other necessary parameters.']
+- ['config/config.py', 'Contains a singleton Config class that loads the config.yaml file for easy access throughout the framework.']
+- ['data_ingest/data_ingestion.py', 'Implements the DataIngestion class for orchestrating the data ingestion process from the solar_sensors.csv file.']
+- ['data_curate/data_curation.py', 'Contains the logic for applying data mappings to transform the raw data into a curated format. It will ensure data quality and prepare the data for transformation.']
+- ['data_transformation/data_transformation.py', 'Contains the logic for transforming the curated data according to the logical data model provided, ensuring that the data is in the correct format for analysis within the BI dashboard.']
+- ['data_visualization/dashboard.py', 'Contains the logic for setting up the interactive BI dashboard using Streamlit. It will include functions to create visualizations such as time-series graphs, heat maps, and bar charts.']
+- ['data_models.py', 'Contains the data models such as the star schema, database tables etc. defined in the design document. The data models are used during data transformation to ensure the data is structured correctly for the BI tool.']
+- ['orchestration/orchestration_service.py', 'Implements the OrchestrationService class that coordinates the execution of the microservices, handling scheduling, error handling, and recovery.']
 
 ## FullAPISpec
 
 openapi: 3.0.0
 info:
-  title: "Solar Panel Dashboard API"
+  title: "Solar Panel Performance BI Dashboard API"
   version: "1.0.0"
 paths:
-  /data/ingest:
+  /ingest:
     post:
-      summary: "Ingest data from the solar_sensors.csv file"
+      summary: "Ingest data from the solar_sensors.csv data source"
       requestBody:
         required: true
         content:
@@ -52,9 +57,9 @@ paths:
       responses:
         '200':
           description: "Data ingestion successful"
-  /data/curate:
+  /curate:
     post:
-      summary: "Validate and normalize ingested data"
+      summary: "Curate ingested data to ensure quality and prepare for transformation"
       requestBody:
         required: true
         content:
@@ -63,14 +68,15 @@ paths:
               type: object
               properties:
                 data:
-                  type: object
-                  additionalProperties: true
+                  type: array
+                  items:
+                    type: object
       responses:
         '200':
           description: "Data curation successful"
-  /data/transform:
+  /transform:
     post:
-      summary: "Transform curated data into the data model"
+      summary: "Transform curated data according to the logical data model"
       requestBody:
         required: true
         content:
@@ -78,17 +84,28 @@ paths:
             schema:
               type: object
               properties:
-                data:
-                  type: object
-                  additionalProperties: true
+                curated_data:
+                  type: array
+                  items:
+                    type: object
       responses:
         '200':
           description: "Data transformation successful"
   /visualize:
-    get:
-      summary: "Generate visualizations for the dashboard"
+    post:
+      summary: "Generate visualizations for the BI dashboard"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                transformed_data:
+                  type: array
+                  items:
+                    type: object
       responses:
         '200':
-          description: "Visualizations generated successfully"
-
+          description: "Visualization successful"
 

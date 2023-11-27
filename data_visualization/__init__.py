@@ -1,2 +1,2 @@
 # filename: data_visualization/__init__.py
-# This __init__.py file marks the data_visualization directory as a Python package.
+# This is an empty file to indicate that 'data_visualization' directory is a Python package.

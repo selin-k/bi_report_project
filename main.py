@@ -1,44 +1,31 @@
-# filename: solar_panel_dashboard/main.py
-from flask import Flask, render_template
-from solar_panel_dashboard.data_ingestion import DataIngestion
-from solar_panel_dashboard.data_curation import DataCuration
-from solar_panel_dashboard.data_transformation import DataTransformation
-from solar_panel_dashboard.data_visualization import DataVisualization
-from solar_panel_dashboard.models import FACT_SOLAR_OUTPUT
+# filename: main.py
+import streamlit as st
+from data_ingest.data_ingestion import DataIngestionService
+from data_curate.data_curation import DataCurationService
+from data_transformation.data_transformation import DataTransformationService
+from data_visualization.dashboard import setup_dashboard
+from orchestration.orchestration_service import OrchestrationService
+from config.config import Config
 
-# Initialize Flask application
-app = Flask(__name__)
+# Load the configuration
+config = Config()
 
-# Define the route for the index page
-# @app.route('/')
-def index():
-    # Orchestrate the ETL pipeline
-    # Step 1: Data Ingestion
-    ingestion = DataIngestion()
-    data_frame = ingestion.load_data('/Users/selinkayay/appgenpro/data/solar_sensors.csv')
-    
-    # Step 2: Data Curation
-    curation = DataCuration()
-    validated_data = curation.validate_data(data_frame)
-    normalized_data = curation.normalize_data(validated_data)
-    
-    # Step 3: Data Transformation
-    transformation = DataTransformation()
-    transformed_data = transformation.transform_data(normalized_data)
-    
-    # # Step 4: KPI Calculation
-    # fact_solar_output = FACT_SOLAR_OUTPUT()
-    # fact_solar_output.calculate_kpis(transformed_data)
-    
-    # Step 5: Data Visualization
-    visualization = DataVisualization()
-    figure = visualization.generate_visuals(transformed_data)
-    
-    # Render the dashboard template
-    figure.show()
-    # return render_template('dashboard.html', figure=figure)
+# Initialize services
+data_ingestion_service = DataIngestionService(config)
+data_curation_service = DataCurationService(config)
+data_transformation_service = DataTransformationService(config)
+orchestration_service = OrchestrationService(
+    data_ingestion_service,
+    data_curation_service,
+    data_transformation_service
+)
 
-# Run the Flask application if this file is executed as the main program
-if __name__ == '__main__':
-    index()
-    # app.run(debug=True)
+def main():
+    # Orchestrate the ETL process
+    orchestration_service.orchestrate_etl()
+    
+    # Set up the Streamlit dashboard
+    setup_dashboard()
+
+if __name__ == "__main__":
+    main()
