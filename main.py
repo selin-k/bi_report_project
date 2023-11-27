@@ -22,10 +22,10 @@ orchestration_service = OrchestrationService(
 
 def main():
     # Orchestrate the ETL process
-    orchestration_service.orchestrate_etl()
+    transformed_data = orchestration_service.orchestrate_etl()
     
     # Set up the Streamlit dashboard
-    setup_dashboard()
+    setup_dashboard(transformed_data)
 
 if __name__ == "__main__":
     main()

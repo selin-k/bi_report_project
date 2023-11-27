@@ -2,61 +2,60 @@
 
 ## HighLevelSystemDesign
 
-The solution architecture is based on a microservices architecture pattern, which aligns with the organization's standards of using Python for ETL processes. The architecture will consist of several loosely coupled microservices, each responsible for a specific part of the ETL pipeline. These microservices will be orchestrated to work together to ingest, curate, transform, and load the data into the BI tool for real-time analytics.
+The solution architecture is based on a microservices architecture pattern, which aligns with the organization's standards of using Python for implementation. The architecture will consist of several independent microservices, each responsible for a specific aspect of the ETL data pipeline. These microservices will be orchestrated to work together to ingest, curate, transform, and visualize the data from the solar_sensors.csv file, ensuring real-time updates and interactive capabilities for the BI Dashboard.
 
 ## DataIngestion
 
-The data_ingestion microservice will be responsible for ingesting data from the provided solar_sensors.csv file. It will monitor the source directory for new or updated files and ingest them into the system. The ingestion process will be configurable to handle different data sources in the future if required.
+The data_ingestion microservice will be responsible for ingesting data from the provided CSV file. It will monitor the file location for any updates and ingest new data accordingly. The service will be configurable to handle different data sources in the future if required.
 
 ## DataCuration
 
-The data_curation microservice will perform initial quality checks on the ingested data. It will ensure there are no duplicates and that the data conforms to the expected schema. Given that the dataset has no missing values, the focus will be on validating the data types and ranges of the numerical values to ensure they are within expected limits.
+The data_curation microservice will ensure the quality of the ingested data. It will check for duplicates and perform any necessary data cleaning steps. This service will also handle the mapping of source data to the target schema as defined in the logical data model.
 
 ## DataTransformation
 
-The data_transformation microservice will apply business logic to calculate KPIs such as 'Total Energy Output', 'Panel Efficiency', and 'Failure Rate'. It will transform the data according to the logical data model provided, ensuring that the data is in the correct format for analysis and reporting within the BI dashboard.
+The data_transformation microservice will apply business logic to the curated data to calculate the KPIs such as 'Total Energy Output', 'Panel Efficiency', and 'Failure Rate'. It will transform the data according to the requirements for visualization and analysis, ensuring that the data model supports efficient data retrieval.
 
 ## DataVisualization
 
-The data_visualization microservice will not be implemented directly, as the design of visualizations will be handled by the BI tool. However, this microservice will ensure that the data is prepared and available in a format that can be easily used by the BI tool to create interactive visualizations such as time-series graphs, heat maps, and bar charts.
+The data_visualization microservice will generate the required visualizations for the BI Dashboard. It will use the transformed data to create interactive charts and graphs that allow users to understand the performance of the solar panels. This service will ensure that visualizations are responsive and accessible on both desktop and mobile devices.
 
 ## Orchestration
 
-The orchestration layer will coordinate the execution of the microservices, ensuring that data flows smoothly from ingestion to visualization. It will handle scheduling, error handling, and recovery, as well as logging to monitor the health and performance of the ETL pipeline.
+The orchestration layer will coordinate the execution of the microservices, ensuring that data flows smoothly from ingestion to visualization. It will automate the data update process to minimize manual intervention and ensure that the dashboard reflects the most current information.
 
 ## ClassDiagrams
 
 ```mermaid
 classDiagram
-    class DataIngestionService{
+    class DataIngestionService {
         +ingest_data() -> None
     }
-    class DataCurationService{
+    class DataCurationService {
         +curate_data() -> None
     }
-    class DataTransformationService{
+    class DataTransformationService {
         +transform_data() -> None
     }
-    class OrchestrationService{
-        +orchestrate_etl() -> None
+    class DataVisualizationService {
+        +visualize_data() -> None
     }
-    DataIngestionService "1" -- "1" DataCurationService: sends_data_to
-    DataCurationService "1" -- "1" DataTransformationService: sends_data_to
-    DataTransformationService "1" -- "1" OrchestrationService: sends_data_to
+    DataIngestionService "1" -- "1" DataCurationService: sends_data
+    DataCurationService "1" -- "1" DataTransformationService: sends_data
+    DataTransformationService "1" -- "1" DataVisualizationService: sends_data
 ```
 
 ## ProgramFlow
 
 ```mermaid
 sequenceDiagram
-    participant Orchestration as OrchestrationService
     participant Ingestion as DataIngestionService
     participant Curation as DataCurationService
     participant Transformation as DataTransformationService
+    participant Visualization as DataVisualizationService
 
-    Orchestration->>Ingestion: ingest_data()
-    Ingestion-->>Curation: curate_data()
-    Curation-->>Transformation: transform_data()
-    Transformation-->>Orchestration: orchestrate_etl()
+    Ingestion->>Curation: ingest_data()
+    Curation->>Transformation: curate_data()
+    Transformation->>Visualization: transform_data()
 ```
 

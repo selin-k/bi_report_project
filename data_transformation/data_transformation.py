@@ -9,8 +9,8 @@ class DataTransformationService:
         try:
             # Apply business logic to calculate KPIs such as 'Total Energy Output', 'Panel Efficiency', and 'Failure Rate'
             # For simplicity, let's assume we're calculating 'Total Energy Output' as the sum of all power columns
-            if 'S1_Power_kwh' in curated_data.columns and 'S2_Power_kwh' in curated_data.columns:
-                curated_data['Total_Power_kwh'] = curated_data['S1_Power_kwh'] + curated_data['S2_Power_kwh']
+            if 'S1_Power(kwh)' in curated_data.columns and 'S2_Power(kwh)' in curated_data.columns:
+                curated_data['Total_Power_kwh'] = curated_data['S1_Power(kwh)'] + curated_data['S2_Power(kwh)']
             
             # Additional transformation steps can be added here to align with the logical data model
             

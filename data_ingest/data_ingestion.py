@@ -5,7 +5,7 @@ class DataIngestionService:
     def __init__(self, config):
         self.config = config
         # Assuming the first datasource in the list is the one we want to use
-        self.data_source_path = self.config.get('datasources')[0]['connector']['folder_path']
+        self.data_source_path = self.config.get('datasources')[0]['connector']['folder_path'] + self.config.get('datasources')[0]['connector']['file_path']
 
     def ingest_data(self):
         try:
