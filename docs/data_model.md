@@ -1,46 +1,47 @@
-# Data Model Design Document for Solar Panel BI Dashboard
+# Solar Panel Sensor Data BI Dashboard Data Model Document
 
 ## Standards
 
-IEC 61970 for Energy Management System Integration
+Data Modeling: IEC 61970 for Energy Management System Integration, Data Models: Logical Semantic Data Model with fact and dimension tables.
 
 ## LogicalDataModel
 
-The logical data model for the Solar Panel BI Dashboard includes entities such as Solar_Panel, Energy_Output, Panel_Failure, and Environmental_Factor. Each entity has attributes that capture the necessary details for analysis and reporting within the BI Dashboard.
+The logical data model is designed to support the KPIs and insights required for the BI Dashboard, focusing on current energy output, underperforming solar panels, panel failure rates, and predictive failure analysis.
+
+## FactTables
+
+- {'TableName': 'FACT_SOLAR_OUTPUT', 'Fields': [{'FieldName': 'OutputID', 'DataType': 'INT', 'IsPrimaryKey': True, 'IsForeignKey': False}, {'FieldName': 'Timestamp', 'DataType': 'DATETIME', 'IsPrimaryKey': False, 'IsForeignKey': False}, {'FieldName': 'S1_Power_kwh', 'DataType': 'FLOAT', 'IsPrimaryKey': False, 'IsForeignKey': False}, {'FieldName': 'S2_Power_kwh', 'DataType': 'FLOAT', 'IsPrimaryKey': False, 'IsForeignKey': False}, {'FieldName': 'Light_kiloLux', 'DataType': 'FLOAT', 'IsPrimaryKey': False, 'IsForeignKey': False}, {'FieldName': 'Temp_degC', 'DataType': 'FLOAT', 'IsPrimaryKey': False, 'IsForeignKey': False}, {'FieldName': 'WeatherID', 'DataType': 'INT', 'IsPrimaryKey': False, 'IsForeignKey': True}, {'FieldName': 'StateID', 'DataType': 'INT', 'IsPrimaryKey': False, 'IsForeignKey': True}], 'Description': 'This fact table captures the power output and environmental conditions for each solar panel at various timestamps.'}
+
+## DimensionTables
+
+- {'TableName': 'DIM_WEATHER', 'Fields': [{'FieldName': 'WeatherID', 'DataType': 'INT', 'IsPrimaryKey': True, 'IsForeignKey': False}, {'FieldName': 'WeatherCondition', 'DataType': 'VARCHAR', 'IsPrimaryKey': False, 'IsForeignKey': False}], 'Description': 'Dimension table for weather conditions, referenced by the FACT_SOLAR_OUTPUT table.'}
+- {'TableName': 'DIM_PANEL_STATE', 'Fields': [{'FieldName': 'StateID', 'DataType': 'INT', 'IsPrimaryKey': True, 'IsForeignKey': False}, {'FieldName': 'PanelState', 'DataType': 'VARCHAR', 'IsPrimaryKey': False, 'IsForeignKey': False}], 'Description': 'Dimension table for the state of the solar panels, indicating normal operation or various types of faults.'}
 
 ## ERDiagram
 
 
 ```mermaid
-ERDiagram
-    SOLAR_PANEL ||--o{ ENERGY_OUTPUT : generates
-    SOLAR_PANEL ||--o{ PANEL_FAILURE : experiences
-    SOLAR_PANEL ||--o{ ENVIRONMENTAL_FACTOR : influenced_by
-    SOLAR_PANEL {
-        string panel_id PK
-        string location
-        string type
+erDiagram
+    FACT_SOLAR_OUTPUT ||--o{ DIM_WEATHER : has
+    FACT_SOLAR_OUTPUT ||--o{ DIM_PANEL_STATE : has
+    FACT_SOLAR_OUTPUT {
+        int OutputID PK
+        datetime Timestamp
+        float S1_Power_kwh
+        float S2_Power_kwh
+        float Light_kiloLux
+        float Temp_degC
+        int WeatherID FK
+        int StateID FK
     }
-    ENERGY_OUTPUT {
-        string output_id PK
-        string panel_id FK
-        datetime timestamp
-        float kWh
+    DIM_WEATHER {
+        int WeatherID PK
+        varchar WeatherCondition
     }
-    PANEL_FAILURE {
-        string failure_id PK
-        string panel_id FK
-        string failure_type
-        datetime failure_time
-        int count
-    }
-    ENVIRONMENTAL_FACTOR {
-        string factor_id PK
-        string panel_id FK
-        datetime timestamp
-        float temperature
-        float light_intensity
+    DIM_PANEL_STATE {
+        int StateID PK
+        varchar PanelState
     }
 ```
-
+            
 
